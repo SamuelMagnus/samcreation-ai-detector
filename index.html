@@ -121,7 +121,11 @@ footer { border-top:1px solid var(--border); padding:20px 0; display:flex; justi
 
   <div class="api-strip">
     <label>&#128273; Anthropic API Key</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" oninput="saveKey()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+      <span id="keyStatus" style="font-size:10px;color:var(--text3);"></span>
+      <button onclick="clearKey()" style="background:none;border:none;font-size:10px;color:var(--text3);cursor:pointer;font-family:Inter,sans-serif;padding:0;">✕ Clear saved key</button>
+    </div>
     <p class="api-note">Never stored. Sent only directly to Anthropic's API. Get yours at console.anthropic.com</p>
   </div>
 
@@ -195,8 +199,30 @@ footer { border-top:1px solid var(--border); padding:20px 0; display:flex; justi
   </footer>
 </div>
 <script>
+function saveKey(){
+  const k = document.getElementById("apiKey").value.trim();
+  if(k) {
+    localStorage.setItem("sc-api-key", k);
+    document.getElementById("keyStatus").textContent = "Key saved ✓";
+    document.getElementById("keyStatus").style.color = "var(--yellow)";
+  }
+}
+function clearKey(){
+  localStorage.removeItem("sc-api-key");
+  document.getElementById("apiKey").value = "";
+  document.getElementById("keyStatus").textContent = "Key cleared";
+  document.getElementById("keyStatus").style.color = "var(--text3)";
+}
 function setTheme(t){document.documentElement.setAttribute("data-theme",t);document.getElementById("darkBtn").classList.toggle("active",t==="dark");document.getElementById("lightBtn").classList.toggle("active",t==="light");localStorage.setItem("sc-theme",t);}
-(function(){setTheme(localStorage.getItem("sc-theme")||"dark");})();
+(function(){
+  setTheme(localStorage.getItem("sc-theme")||"dark");
+  const savedKey = localStorage.getItem("sc-api-key");
+  if (savedKey) {
+    document.getElementById("apiKey").value = savedKey;
+    document.getElementById("keyStatus").textContent = "Key saved";
+    document.getElementById("keyStatus").style.color = "var(--yellow)";
+  }
+})();
 
 const HUMANISE_PROMPT=`You are rewriting text so it reads like a real university student wrote it. Not a perfect student. A good one who thinks clearly but writes the way actual people write with uneven structure, moments of real opinion, and a tone that shifts slightly between sections.
 
