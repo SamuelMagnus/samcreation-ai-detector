@@ -1,6 +1,5 @@
-const CACHE = "samcreation-ai-v1";
+const CACHE = "samcreation-ai-v2";
 const ASSETS = [
-  "./",
   "./index.html",
   "./manifest.json",
   "./logo.png"
@@ -8,7 +7,9 @@ const ASSETS = [
 
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
+    caches.open(CACHE).then(c => {
+      return Promise.allSettled(ASSETS.map(a => c.add(a)));
+    })
   );
   self.skipWaiting();
 });
